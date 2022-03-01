@@ -1,14 +1,6 @@
 import pg from 'pg';
 const { Client, Pool } = pg;
 
-const config = {
-  user: 'postgres',
-  host: 'localhost',
-  database: 'escuela',
-  password: '12344',
-  port: 5432,
-};
-
 const configPool = {
   user: 'postgres',
   host: 'localhost',
@@ -20,7 +12,6 @@ const configPool = {
   connectionTimeoutMillis: 2000,
 };
 
-const client = new Client(config);
 const pool = new Pool(configPool);
 
 // query para nuevo estudiante
@@ -109,6 +100,7 @@ export async function editar(nombre, rut, curso, nivel) {
         `Ha ocurrido un error COD ${errorConex.code}: `,
         errorConex.message
       );
+
     try {
       const SqlQuery = {
         name: 'fetch-user',
@@ -132,19 +124,30 @@ export async function editar(nombre, rut, curso, nivel) {
 
 // query para consultar estudiante por rut
 export async function eliminar(rut) {
-  client.connect();
-  try {
-    const res = await client.query(
-      `DELETE FROM estudiantes WHERE rut = '${rut}'`
-    );
-    client.end();
-    if (!res.rowCount)
-      return `Error!!! el rut ${rut} no se encuentra registrado`;
-    return `Estudiante con Rut: ${rut} eliminado con éxito`;
-  } catch (error) {
-    client.end();
-    return `Hubo un error:
-      ${error.message},
-      Revise los datos ingresados`;
-  }
+  pool.connect(async (errorConex, client, release) => {
+    if (errorConex)
+      return console.log(
+        `Ha ocurrido un error COD ${errorConex.code}: `,
+        errorConex.message
+      );
+    try {
+      const SqlQuery = {
+        name: 'fetch-user',
+        text: 'DELETE FROM estudiantes WHERE rut = $1',
+        values: [rut],
+      };
+      const res = await client.query(SqlQuery);
+      console.log(
+        res.rowCount
+          ? `Estudiante con Rut: ${rut} eliminado con éxito`
+          : `Error!!! el rut ${rut} no se encuentra registrado`
+      );
+    } catch (error) {
+      console.log(`Hubo un error ${error.code}:
+        ${error.message},
+        Revise los datos ingresados`);
+    }
+    release();
+    pool.end();
+  });
 }

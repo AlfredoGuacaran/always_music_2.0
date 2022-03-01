@@ -65,8 +65,7 @@ function inputsError(
     const [rut] = inputs.slice(1);
     const checkInputs = inputsError('nombre', rut, 'curso', 'nivel');
     if (!checkInputs) {
-      const request = await eliminar(rut);
-      console.log(request);
+      await eliminar(rut);
     } else console.log(checkInputs);
   }
 })();
