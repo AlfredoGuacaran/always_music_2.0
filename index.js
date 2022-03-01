@@ -8,7 +8,7 @@ import {
   eliminar,
 } from './querys.js';
 
-console.log(typeRequest);
+// console.log(typeRequest);
 
 ////// chequeo de inputs
 function inputsError(
@@ -34,7 +34,6 @@ function inputsError(
     const checkInputs = inputsError(nombre, rut, curso, nivel);
     if (!checkInputs) {
       const request = await newStudent(nombre, rut, curso, nivel);
-      console.log(request);
     } else console.log(checkInputs);
   }
 
@@ -43,15 +42,13 @@ function inputsError(
     const [rut] = inputs.slice(1);
     const checkInputs = inputsError('nombre', rut, 'curso', 'nivel');
     if (!checkInputs) {
-      const request = await searchStudent(rut);
-      console.log(request);
+      await searchStudent(rut);
     } else console.log(checkInputs);
   }
 
   // CONSULTA todos los estudiantes
   if (typeRequest == 'consulta') {
     const request = await consulta();
-    console.log('Registro actual de estudiantes', request);
   }
 
   // EDITAR a un estudiante
@@ -60,7 +57,6 @@ function inputsError(
     const checkInputs = inputsError(nombre, rut, curso, nivel);
     if (!checkInputs) {
       const request = await editar(nombre, rut, curso, nivel);
-      console.log(request);
     } else console.log(checkInputs);
   }
 
